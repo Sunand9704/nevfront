@@ -1,148 +1,101 @@
-import { PageHeader } from "@/components/PageHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Package, Truck, CheckCircle, Clock } from "lucide-react";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { FloatingDock } from "@/components/FloatingDock";
 
-export default function Orders() {
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024-01-15",
-      status: "delivered",
-      total: 1308,
-      items: [
-        { name: "Premium Wireless Headphones", quantity: 1, price: 299 },
-        { name: "Smart Watch Pro", quantity: 2, price: 449 }
-      ]
-    },
-    {
-      id: "ORD-002",
-      date: "2024-01-20",
-      status: "shipped",
-      total: 159,
-      items: [
-        { name: "Wireless Charging Pad", quantity: 1, price: 59 },
-        { name: "Phone Case Pro", quantity: 2, price: 50 }
-      ]
-    },
-    {
-      id: "ORD-003",
-      date: "2024-01-22",
-      status: "processing",
-      total: 899,
-      items: [
-        { name: "Laptop Stand", quantity: 1, price: 129 },
-        { name: "4K Monitor", quantity: 1, price: 770 }
-      ]
-    }
-  ];
+const dummyOrders = [
+  {
+    id: "ORD-1001",
+    customer: "Alice Johnson",
+    date: "2024-07-21",
+    total: "₹1,299",
+    status: "Processing",
+  },
+  {
+    id: "ORD-1002",
+    customer: "Bob Smith",
+    date: "2024-07-20",
+    total: "₹399",
+    status: "Shipped",
+  },
+  {
+    id: "ORD-1003",
+    customer: "Charlie Lee",
+    date: "2024-07-19",
+    total: "₹2,499",
+    status: "Delivered",
+  },
+  {
+    id: "ORD-1004",
+    customer: "Diana Prince",
+    date: "2024-07-18",
+    total: "₹99",
+    status: "Cancelled",
+  },
+  {
+    id: "ORD-1005",
+    customer: "Ethan Hunt",
+    date: "2024-07-17",
+    total: "₹1,099",
+    status: "Processing",
+  },
+];
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "delivered":
-        return <CheckCircle className="h-4 w-4 text-success" />;
-      case "shipped":
-        return <Truck className="h-4 w-4 text-accent" />;
-      case "processing":
-        return <Clock className="h-4 w-4 text-warning" />;
-      default:
-        return <Package className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
+const statusColor = (status: string) => {
+  switch (status) {
+    case "Processing":
+      return "bg-yellow-100 text-yellow-700";
+    case "Shipped":
+      return "bg-blue-100 text-blue-700";
+    case "Delivered":
+      return "bg-green-100 text-green-700";
+    case "Cancelled":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      delivered: "default",
-      shipped: "secondary", 
-      processing: "outline"
-    } as const;
-    
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || "outline"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
+const Orders: React.FC = () => {
   return (
-    <div className="page-transition">
-      <PageHeader 
-        title="Order History" 
-        subtitle="Track your purchases and order status"
-      />
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <Card key={order.id} className="card-hover">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(order.status)}
-                    <div>
-                      <CardTitle className="text-lg">Order {order.id}</CardTitle>
-                      <p className="text-sm text-muted-foreground">
-                        Placed on {new Date(order.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    {getStatusBadge(order.status)}
-                    <p className="text-lg font-semibold mt-1">₹{order.total}</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {order.items.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
-                      </div>
-                      <span className="font-medium">₹{item.price * item.quantity}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="flex items-center justify-between pt-4">
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
-                    {order.status === "delivered" && (
-                      <Button variant="outline" size="sm">
-                        Reorder
-                      </Button>
-                    )}
-                  </div>
-                  {order.status === "shipped" && (
-                    <Button variant="outline" size="sm">
-                      Track Package
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          
-          {orders.length === 0 && (
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                <Package className="h-12 w-12 text-muted-foreground" />
+    <>
+      <FloatingDock />
+      <div className="min-h-screen bg-background py-8 sm:py-12 px-4 sm:px-6 md:px-12 pb-20 sm:pb-12">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 bg-gradient-primary bg-clip-text text-transparent">Orders</h1>
+          <Card className="glass border-0 shadow-xl">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Order ID</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Customer</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Total</th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-card divide-y divide-border">
+                    {dummyOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-muted/50 transition-smooth">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-foreground">{order.id}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-foreground">{order.customer}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-muted-foreground">{order.date}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-foreground">{order.total}</td>
+                        <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${statusColor(order.status)}`}>{order.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <h2 className="text-2xl font-semibold text-foreground mb-4">No orders yet</h2>
-              <p className="text-muted-foreground mb-8">
-                When you place orders, they will appear here.
-              </p>
-              <Button className="btn-primary">
-                Start Shopping
-              </Button>
-            </div>
-          )}
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
+    </>
   );
-}
+};
+
+export default Orders; 
